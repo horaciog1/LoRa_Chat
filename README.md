@@ -23,7 +23,13 @@ _A robust, secure messaging application enabling encrypted communication between
   - [Software Requirements](#software-requirements)
 - [🚀 Getting Started](#getting-started)
 - [🔐 Security](#security)
-- [📡 Protocol Design](#protocol-design)
+- [📡 Protocol Deep Dive](#protocol-deep-dive)
+  - [Packet Structure](#packet-structure)
+  - [Address Negotiation (Training)](#address-negotiation)
+  - [Direct Messaging & Reliability](#direct-messaging)
+  - [Relay & Mesh Routing](#relay-routing)
+- [❓ Troubleshooting](#troubleshooting)
+- [🤝 Contributing](#contributing)
 - [👥 Authors](#authors)
 
 ---
@@ -113,18 +119,72 @@ python main.py
 - **Authentication**: Each message includes an **HMAC-SHA256 signature** to verify sender identity and message integrity.
 - **Relay Security**: Relayed messages maintain **end-to-end encryption**; intermediate nodes cannot decrypt the payload, ensuring privacy even in multi-hop scenarios.
 
-<a id="protocol-design"></a>
-## 📡 Protocol Design
+<a id="protocol-deep-dive"></a>
+## 📡 Protocol Deep Dive
 
-| Component | Responsibility |
-|-----------|----------------|
-| **`app.py`** | Manages the Flask server and SocketIO events, bridging the web UI with the backend logic. |
-| **`Messenger.py`** | The central controller that coordinates communication, message caching, and protocol handling. |
-| **`Comm.py`** | Handles low-level serial communication with the RYLR998 module using AT commands. |
-| **`Message.py`** | Responsible for packet structure, serialization, AES encryption/decryption, and HMAC verification. |
-| **`Relay.py`** | Implements the relay logic to forward messages when direct transmission is not possible. |
-| **`DirectMessage.py`** | Manages the reliable delivery of direct messages using acknowledgments. |
-| **`Training.py`** | Handles the initial network discovery and address assignment phase. |
+<a id="packet-structure"></a>
+### 📦 Packet Structure
+
+Messages are sent as ASCII-encoded `AT+SEND` commands to the RYLR998 module. The internal payload uses the ASCII Unit Separator (`0x1F`) as a delimiter.
+
+**Format:**
+```
+Flag (2B) | Message (Var) | SeqNum (2B) | Timestamp (Epoch)
+```
+
+- **Flag**: A 16-bit field (2 ASCII chars) controlling packet behavior (ACK, Broadcast, Relay, Training).
+- **Message**: The encrypted AES payload + HMAC signature.
+- **SeqNum**: A 14-bit random sequence number used for tracking and ACKs.
+- **Timestamp**: Current epoch time for message ordering.
+
+<a id="address-negotiation"></a>
+### 🤖 Address Negotiation (Training)
+
+When a node first joins, it lacks a unique address. The training phase resolves this:
+
+1.  **Search**: The new node broadcasts a `SEARCH` packet (Flag `...00110000`).
+2.  **Wait**: It enters a 30-second listening window.
+3.  **Reply**: Existing nodes reply with their list of known hosts after a random delay (to avoid collisions).
+4.  **Assignment**: The new node collects all used addresses, picks a random available ID (1-10000), and sets it via `AT+ADDRESS`.
+
+<a id="direct-messaging"></a>
+### 📨 Direct Messaging & Reliability
+
+Reliability is ensured via a Stop-and-Wait ARQ mechanism:
+
+1.  **Send**: A Direct Message (DM) is sent with bit-11 set (Request ACK).
+2.  **Wait**: The sender waits up to 30 seconds for an ACK with a matching Sequence Number.
+3.  **Retry**: If no ACK is received, the message is retransmitted (up to 5 attempts).
+4.  **Failure**: If all retries fail, the system initiates the **Relay Protocol**.
+
+<a id="relay-routing"></a>
+### 🔄 Relay & Mesh Routing
+
+When a direct path is unavailable, the system attempts to find a relay:
+
+1.  **Discovery**: The sender broadcasts a "Who can reach Destination X?" query.
+2.  **Offer**: Nodes that have recently heard from Destination X reply with an offer.
+3.  **Handshake**: The sender selects the first available relay.
+4.  **Forwarding**: The encrypted packet is wrapped in a relay envelope and sent to the relay node, which then forwards it to the final destination.
+
+<a id="troubleshooting"></a>
+## ❓ Troubleshooting
+
+- **No COM Port Found**: Ensure your USB-to-Serial driver is installed (e.g., CH340 or CP210x). Check Device Manager (Windows) or `/dev/` (Linux/macOS).
+- **SocketIO Errors**: If the UI disconnects, refresh the page. The backend handles reconnection automatically.
+- **Dependencies**: If `pip install` fails, try upgrading pip: `python -m pip install --upgrade pip`.
+- **"Training Failed"**: Move closer to other nodes or ensure at least one other node is powered on to respond to the address search.
+
+<a id="contributing"></a>
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1.  Fork the repository.
+2.  Create a feature branch (`git checkout -b feature/NewFeature`).
+3.  Commit your changes (`git commit -m 'Add some NewFeature'`).
+4.  Push to the branch (`git push origin feature/NewFeature`).
+5.  Open a Pull Request.
 
 <a id="authors"></a>
 ## 👥 Authors
