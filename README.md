@@ -3,13 +3,13 @@
 # 💬 LoRa Chat
 ### Secure Peer-to-Peer and Broadcast Messaging over LoRa
 
-_A robust, secure messaging application enabling encrypted communication between multiple nodes using RYLR998 LoRa modules. Features real-time chat via a web interface, multi-hop relay capabilities, and automated network discovery._
+_A robust, secure messaging application enabling encrypted communication between multiple nodes using RYLR998 LoRa modules. Features real-time chat in broadcast (group chat) or direct (private chat) via a web interface, multi-hop relay capabilities, and automated network discovery._
 
+[![Last Commit](https://img.shields.io/badge/last%20commit-today-brightgreen)](https://github.com/horaciog1/check_in_VIL)
+[![Languages](https://img.shields.io/badge/languages-3-blue)]()
 [![Python](https://img.shields.io/badge/Python-3.12%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-3.0.0-green?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![Socket.IO](https://img.shields.io/badge/Socket.IO-Real--Time-black?logo=socket.io&logoColor=white)](https://socket.io/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 </div>
 
 ---
@@ -29,7 +29,6 @@ _A robust, secure messaging application enabling encrypted communication between
   - [Direct Messaging & Reliability](#direct-messaging)
   - [Relay & Mesh Routing](#relay-routing)
 - [❓ Troubleshooting](#troubleshooting)
-- [🤝 Contributing](#contributing)
 - [👥 Authors](#authors)
 
 ---
@@ -174,17 +173,6 @@ When a direct path is unavailable, the system attempts to find a relay:
 - **SocketIO Errors**: If the UI disconnects, refresh the page. The backend handles reconnection automatically.
 - **Dependencies**: If `pip install` fails, try upgrading pip: `python -m pip install --upgrade pip`.
 - **"Training Failed"**: Move closer to other nodes or ensure at least one other node is powered on to respond to the address search.
-
-<a id="contributing"></a>
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1.  Fork the repository.
-2.  Create a feature branch (`git checkout -b feature/NewFeature`).
-3.  Commit your changes (`git commit -m 'Add some NewFeature'`).
-4.  Push to the branch (`git push origin feature/NewFeature`).
-5.  Open a Pull Request.
 
 <a id="authors"></a>
 ## 👥 Authors
