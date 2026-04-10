@@ -5,7 +5,7 @@
 
 _A robust, secure messaging application enabling encrypted communication between multiple nodes using RYLR998 LoRa modules. Features real-time chat in broadcast (group chat) or direct (private chat) via a web interface, multi-hop relay capabilities, and automated network discovery._
 
-[![Last Commit](https://img.shields.io/badge/last%20commit-today-brightgreen)](https://github.com/horaciog1/check_in_VIL)
+[![Last Commit](https://img.shields.io/badge/last%20commit-today-brightgreen)]()
 [![Languages](https://img.shields.io/badge/languages-3-blue)]()
 [![Python](https://img.shields.io/badge/Python-3.12%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-3.0.0-green?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
